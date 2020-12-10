@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-user
+spec:
+  selector:
+    matchLabels:
+      app: java-user
+  template:
+    metadata:
+      labels:
+        app: java-user
+    spec:
+      containers:
+      - securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        name: java-user
+        image: localhost:5000/spring-rest-mysql:latest
+        imagePullPolicy: Never
+        # resources:
+        #   limits:
+        #     memory: "20Mi"
+        #     cpu: "20m"
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MYSQL_ADDR
+          value: mysql-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: java-user
+spec:
+  selector:
+    app: java-user
+  # type: NodePort
+  ports:
+  - name: http
+    port: 8080
+    # targetPort: 8080
+    # nodePort: 31111

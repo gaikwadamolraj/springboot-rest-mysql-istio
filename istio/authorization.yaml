@@ -1,0 +1,32 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: auth-policy-java-user-service
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: java-user
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+       requestPrincipals: ["testing@secure.istio.io/testing@secure.istio.io"]
+    when:
+    - key: request.auth.claims[groups]
+      values: ["group1"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: tcp-auth-policy
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: mysql-db
+  action: ALLOW
+  rules:
+  - to:
+    - operation:
+       ports: ["3306"]
